@@ -1,0 +1,16 @@
+{
+  "name": "tailor-studio",
+  "version": "3.0.0",
+  "description": "3D parametric costume preview app for tailors (16:9 1080p)",
+  "scripts": {
+    "sync:www": "node -e \"const fs=require('fs');fs.mkdirSync('www/lib',{recursive:true});['index.html','style.css','garments.js','model3d.js','app.js','manifest.json','lib/three.min.js'].forEach(f=>fs.copyFileSync(f,'www/'+f));\"",
+    "android:init": "npm run sync:www && npx cap add android",
+    "android:sync": "npm run sync:www && npx cap sync android",
+    "android:open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0"
+  }
+}

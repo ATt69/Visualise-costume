@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tailor Studio – Costume Preview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#27364a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="viewport">
+<div id="stage" class="t-outfit">
+
+  <!-- ================= header ================= -->
+  <header id="top">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" width="42" height="42" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#27364a"/><path d="M24 11a3 3 0 1 1 3 3v3l15 10a2.4 2.4 0 0 1-1.4 4.4H7.4A2.4 2.4 0 0 1 6 27l15-10v-3.5" fill="none" stroke="#e8c98a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><b data-i18n="appName">Tailor Studio</b><small data-i18n="appSub">Show customers the finished costume</small></div>
+    </div>
+    <div class="seg tabs" id="tabSeg">
+      <button data-tab="outfit" data-i18n="tabOutfit">Outfit</button>
+      <button data-tab="acc" data-i18n="tabAcc">Accessories</button>
+    </div>
+    <label class="customer">
+      <span data-i18n="customer">Customer</span>
+      <input id="customerName" type="text" maxlength="40" data-i18n-ph="customerPh" placeholder="Customer name">
+    </label>
+    <div class="top-actions">
+      <div class="seg small" id="langSeg"><button data-lang="en">EN</button><button data-lang="vi">VI</button></div>
+      <button class="btn ghost" id="saveBtn"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16"/></svg><span data-i18n="saveImage">Save image</span></button>
+    </div>
+  </header>
+
+  <!-- ================= left ================= -->
+  <aside id="left" class="panel">
+    <!-- outfit tab -->
+    <div class="pane tab-outfit">
+      <section>
+        <div class="h-row">
+          <h2 data-i18n="garment">Costume</h2>
+          <div class="seg small2" id="genderSeg">
+            <button data-gender="female"><span class="gi">♀</span><span data-i18n="female">Female</span></button>
+            <button data-gender="male"><span class="gi">♂</span><span data-i18n="male">Male</span></button>
+          </div>
+        </div>
+        <div id="garmentGrid" class="garment-grid"></div>
+      </section>
+      <section>
+        <h2 data-i18n="body">Customer measurements</h2>
+        <div id="bodyRows"></div>
+      </section>
+      <section>
+        <h2 data-i18n="garmentMeas">Costume measurements</h2>
+        <div id="garmentRows"></div>
+        <button class="btn ghost wide" id="autoFit"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg><span data-i18n="autoFit">Suggest lengths from height</span></button>
+      </section>
+    </div>
+
+    <!-- accessory tab : drawing studio -->
+    <div class="pane tab-acc">
+      <section>
+        <h2 data-i18n="drawTitle">Draw an accessory</h2>
+        <div class="draw-wrap"><canvas id="drawCanvas" width="512" height="512"></canvas></div>
+        <div class="tool-row">
+          <div class="seg small3" id="toolSeg">
+            <button data-tool="pen" data-i18n="toolPen">Pen</button>
+            <button data-tool="eraser" data-i18n="toolEraser">Eraser</button>
+            <button data-tool="fill" data-i18n="toolFill">Fill</button>
+          </div>
+          <button class="btn mini" id="drawUndo"><svg viewBox="0 0 24 24"><path d="M9 7L4 12l5 5M4 12h10a6 6 0 0 1 0 12"/></svg><span data-i18n="undo">Undo</span></button>
+          <button class="btn mini" id="drawClear"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13"/></svg><span data-i18n="clear">Clear</span></button>
+        </div>
+        <div id="palette" class="palette"></div>
+        <div id="brushRow"></div>
+        <label class="check"><input type="checkbox" id="mirrorDraw"><span data-i18n="mirrorDraw">Symmetric drawing (mirror left/right)</span></label>
+        <button class="btn primary wide" id="addAcc"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="addToOutfit">Add to outfit</span></button>
+      </section>
+    </div>
+  </aside>
+
+  <!-- ================= centre ================= -->
+  <main id="center">
+    <div class="mat"></div>
+    <div id="badge"><b id="badgeGarment"></b><span id="badgeView"></span><small id="badge3D" data-i18n="hint3d">3D Model · Drag to rotate 360°</small></div>
+    <svg id="svg" viewBox="0 0 660 840" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <linearGradient id="shade" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="#000" stop-opacity=".24"/>
+          <stop offset=".2" stop-color="#000" stop-opacity=".04"/>
+          <stop offset=".45" stop-color="#fff" stop-opacity=".12"/>
+          <stop offset=".72" stop-color="#000" stop-opacity=".03"/>
+          <stop offset="1" stop-color="#000" stop-opacity=".26"/>
+        </linearGradient>
+        <linearGradient id="shadeV" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#000" stop-opacity=".12"/>
+          <stop offset="1" stop-color="#000" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="shadeSkin" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="#000" stop-opacity=".1"/>
+          <stop offset=".5" stop-color="#fff" stop-opacity=".14"/>
+          <stop offset="1" stop-color="#000" stop-opacity=".14"/>
+        </linearGradient>
+        <pattern id="fabric" patternUnits="userSpaceOnUse" width="120" height="120"></pattern>
+        <pattern id="fabric2" patternUnits="userSpaceOnUse" width="120" height="120"></pattern>
+        <radialGradient id="floorGlow"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+      </defs>
+      <g id="ruler"></g>
+      <ellipse id="floorEllipse" cx="330" cy="803" rx="200" ry="15" fill="url(#floorGlow)"/>
+      <g id="figure"></g>
+      <g id="dims"></g>
+      <g id="acc"></g>
+      <g id="accUI"></g>
+    </svg>
+    <div id="noFabric" class="no-fabric"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg><span data-i18n="noFabricMsg">Take or upload a fabric photo to dress the costume</span></div>
+    <div id="toast"></div>
+
+    <div id="viewBar">
+      <button class="btn round" id="prevView" aria-label="previous view"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="seg" id="viewSeg">
+        <button data-view="front" data-i18n="vFront">Front</button>
+        <button data-view="right" data-i18n="vRight">Right side</button>
+        <button data-view="back" data-i18n="vBack">Back</button>
+        <button data-view="left" data-i18n="vLeft">Left side</button>
+      </div>
+      <button class="btn round" id="nextView" aria-label="next view"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button class="btn" id="spinBtn" title="360° turntable"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="4.5"/><path d="M15 8l3 4-3 4"/></svg><span data-i18n="spin360">360°</span></button>
+      <button class="btn primary" id="cycleView"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5"/></svg><span data-i18n="changeView">Change view</span></button>
+    </div>
+  </main>
+
+  <!-- ================= right ================= -->
+  <aside id="right" class="panel">
+    <!-- outfit tab : material -->
+    <div class="pane tab-outfit">
+      <section>
+        <h2 data-i18n="material">Material (fabric photo)</h2>
+        <div id="pieceBox" hidden>
+          <label class="check same"><input type="checkbox" id="linked" checked><span data-i18n="sameFabric">Same fabric for both pieces</span></label>
+          <div class="seg full" id="targetSeg">
+            <button data-target="top" id="tTop"></button>
+            <button data-target="bottom" id="tBottom"></button>
+          </div>
+        </div>
+        <div id="swatch" class="swatch"><span data-i18n="noFabric">No fabric photo yet</span>
+          <button class="btn mini crop-btn" id="recropBtn" hidden><svg viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/></svg><span data-i18n="crop">Crop</span></button>
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="camBtn"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg><span data-i18n="takePhoto">Take photo</span></button>
+          <button class="btn" id="uploadBtn"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 9"/></svg><span data-i18n="uploadPhoto">Choose photo</span></button>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" hidden>
+      </section>
+      <section id="recentSec" hidden>
+        <h2 data-i18n="recent">Recent fabrics</h2>
+        <div id="recent" class="recent"></div>
+      </section>
+      <section>
+        <h2 data-i18n="pattern">Pattern</h2>
+        <div id="patternRows"></div>
+        <label class="check"><input type="checkbox" id="mirror" checked><span data-i18n="mirror">Seamless tiling (mirror edges)</span></label>
+        <div id="accentRow" class="accent-row" hidden><span id="accentLabel"></span><input type="color" id="accent" value="#f3efe6"></div>
+      </section>
+    </div>
+
+    <!-- accessory tab : library + selected item -->
+    <div class="pane tab-acc">
+      <section>
+        <h2 data-i18n="library">Accessory library</h2>
+        <div id="accLib" class="acc-lib"></div>
+      </section>
+      <section>
+        <h2 data-i18n="placed">Selected accessory</h2>
+        <div id="accSel"></div>
+      </section>
+      <section class="tip">
+        <h2 data-i18n="tipTitle">Tips</h2>
+        <p data-i18n="accTip">Draw on the left, then press “Add to outfit”. Drag an accessory to move it, use the corner handle to resize and the top handle to rotate.</p>
+      </section>
+    </div>
+  </aside>
+
+  <!-- ================= camera modal ================= -->
+  <div id="camModal" class="modal" hidden>
+    <div class="cam-card">
+      <div class="cam-head"><b data-i18n="camTitle">Photograph the fabric</b><button class="btn round" id="camClose" aria-label="close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div class="cam-frame">
+        <video id="camVideo" playsinline muted></video>
+        <img id="camShot" alt="">
+        <div class="cam-guide"></div>
+        <div id="camMsg" class="cam-msg" hidden></div>
+      </div>
+      <div class="cam-actions" id="camLive">
+        <button class="btn" id="camSwitch"><svg viewBox="0 0 24 24"><path d="M4 8h12l-3-3M20 16H8l3 3"/></svg><span data-i18n="switchCam">Switch camera</span></button>
+        <button class="shutter" id="camShutter" aria-label="capture"></button>
+        <button class="btn" id="camFallback"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 9"/></svg><span data-i18n="uploadInstead">Choose photo instead</span></button>
+      </div>
+      <div class="cam-actions" id="camReview" hidden>
+        <button class="btn" id="camRetake"><span data-i18n="retake">Retake</span></button>
+        <button class="btn primary" id="camUse"><span data-i18n="usePhoto">Use this photo</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= crop modal ================= -->
+  <div id="cropModal" class="modal" hidden>
+    <div class="crop-card">
+      <div class="cam-head"><b data-i18n="cropTitle">Crop the material</b><button class="btn round" id="cropClose" aria-label="close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div class="crop-stage" id="cropStage">
+        <div class="crop-wrap" id="cropWrap">
+          <canvas id="cropCanvas"></canvas>
+          <div class="crop-box" id="cropBox">
+            <i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="e"></i>
+            <i data-h="se"></i><i data-h="s"></i><i data-h="sw"></i><i data-h="w"></i>
+          </div>
+        </div>
+      </div>
+      <p class="crop-hint" data-i18n="cropHint">Drag the box to move it and drag the handles to resize it.</p>
+      <div class="crop-actions">
+        <div class="seg" id="ratioSeg">
+          <button data-ratio="free" data-i18n="ratioFree">Free</button>
+          <button data-ratio="1" data-i18n="ratioSquare">Square 1:1</button>
+          <button data-ratio="1.3333">4:3</button>
+          <button data-ratio="0.75">3:4</button>
+        </div>
+        <button class="btn" id="rotL"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 3 6.2M4 6v6h6"/></svg><span data-i18n="rotLeft">Rotate left</span></button>
+        <button class="btn" id="rotR"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 0-3 6.2M20 6v6h-6"/></svg><span data-i18n="rotRight">Rotate right</span></button>
+        <span class="grow"></span>
+        <button class="btn" id="cropCancel"><span data-i18n="cancel">Cancel</span></button>
+        <button class="btn primary" id="cropApply"><span data-i18n="applyCrop">Use cropped photo</span></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+<script src="garments.js"></script>
+<script src="lib/three.min.js"></script>
+<script src="model3d.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

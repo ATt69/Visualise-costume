@@ -1,0 +1,18 @@
+{
+  "name": "Tailor Studio – 3D Costume Preview",
+  "short_name": "Tailor Studio",
+  "description": "3D parametric costume preview and material studio for tailors",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#15181d",
+  "theme_color": "#27364a",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%2327364a'/%3E%3Cpath d='M256 120a32 32 0 1 1 32 32v32l160 106a26 26 0 0 1-15 47H79a26 26 0 0 1-15-47l160-106v-36' fill='none' stroke='%23e8c98a' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
